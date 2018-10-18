@@ -23,7 +23,8 @@ defmodule PackagrCli.MixProject do
     [
       {:optimus, "~> 0.1.0"},
       {:httpoison, "~> 1.0"},
-      {:poison, "~> 3.1"}
+      {:poison, "~> 3.1"},
+      {:mox, "~> 0.4", only: :test}
     ]
   end
 end

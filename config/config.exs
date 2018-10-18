@@ -28,3 +28,15 @@ use Mix.Config
 # here (which is why it is important to import them last).
 #
 #     import_config "#{Mix.env()}.exs"
+
+config :packagr_cli,
+  base_url: "http://localhost:4000/api/",
+  username: "foo",
+  password: "bar",
+  packagr_api: PackagrApi
+
+env_config = "#{Mix.env()}.exs"
+
+if File.exists?("config/" <> env_config) do
+  import_config env_config
+end

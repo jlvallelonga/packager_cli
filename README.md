@@ -1,21 +1,9 @@
 # PackagrCli
 
-**TODO: Add description**
+A very simple package manager. Connects to server at https://github.com/jlvallelonga/packagr_api
+
+see `mix packagr --help`
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `packagr_cli` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:packagr_cli, "~> 0.1.0"}
-  ]
-end
-```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/packagr_cli](https://hexdocs.pm/packagr_cli).
-
+clone this repo

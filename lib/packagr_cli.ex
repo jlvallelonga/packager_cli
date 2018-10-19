@@ -23,11 +23,12 @@ defmodule PackagrCli do
   end
 
   def publish(%{filepath: filepath}) do
-    response = if File.exists?(filepath) do
-      @packagr_api.publish(filepath)
-    else
-      :error
-    end
+    response =
+      if File.exists?(filepath) do
+        @packagr_api.publish(filepath)
+      else
+        :error
+      end
 
     IO.puts(to_string(response))
   end

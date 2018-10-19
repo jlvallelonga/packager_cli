@@ -28,13 +28,18 @@ defmodule PackagrCliTest do
       end)
     end
 
-    test "displays response" do
+    test "displays success when it succeeds" do
       File.mkdir("temp/")
       filepath = "temp/foo.tar.gz"
       File.write(filepath, "some gzipped data")
 
       result = capture_io(fn -> PackagrCli.publish(%{filepath: filepath}) end)
       assert result =~ ~r/^success\n$/
+    end
+
+    test "displays error if file doesn't exist" do
+      result = capture_io(fn -> PackagrCli.publish(%{filepath: "non_existent_file.tar.gz"}) end)
+      assert result =~ ~r/^error\n$/
     end
   end
 

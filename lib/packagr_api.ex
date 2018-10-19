@@ -1,4 +1,17 @@
+defmodule Api do
+  @typedoc """
+  literally either :success or :error
+  """
+  @type success_or_error :: :success | :error
+
+  @callback search(String.t) :: map()
+  @callback publish(String.t) :: success_or_error
+  @callback install(String.t, String.t) :: binary()
+end
+
 defmodule PackagrApi do
+  @behaviour Api
+
   def search(query) do
     HTTPoison.start()
 
@@ -42,10 +55,12 @@ defmodule PackagrApi do
     file_gzipped_data
   end
 
+  @spec get_base_url() :: String.t
   defp get_base_url() do
     Application.get_env(:packagr_cli, :base_url)
   end
 
+  @spec get_auth_headers() :: list("x-auth-user": String.t, "x-auth-user": String.t)
   defp get_auth_headers() do
     username = Application.get_env(:packagr_cli, :username)
     password = Application.get_env(:packagr_cli, :password)
@@ -54,6 +69,8 @@ defmodule PackagrApi do
 end
 
 defmodule PackagrApi.InMemory do
+  @behaviour Api
+
   def search(query) do
     %{
       "packages" => [

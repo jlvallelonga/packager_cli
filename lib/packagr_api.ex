@@ -1,16 +1,9 @@
-defmodule Api do
-  @typedoc """
-  literally either :success or :error
-  """
-  @type success_or_error :: :success | :error
-
-  @callback search(String.t) :: map()
-  @callback publish(String.t) :: success_or_error
-  @callback install(String.t, String.t) :: binary()
-end
-
 defmodule PackagrApi do
   @behaviour Api
+
+  @moduledoc """
+  http interface for the packager api
+  """
 
   def search(query) do
     HTTPoison.start()
@@ -65,35 +58,5 @@ defmodule PackagrApi do
     username = Application.get_env(:packagr_cli, :username)
     password = Application.get_env(:packagr_cli, :password)
     ["x-auth-user": username, "x-auth-password": password]
-  end
-end
-
-defmodule PackagrApi.InMemory do
-  @behaviour Api
-
-  def search(query) do
-    %{
-      "packages" => [
-        %{"id" => 1, "name" => query, "version" => "0.0.1"}
-      ]
-    }
-  end
-
-  def publish(_filepath) do
-    :success
-  end
-
-  def install(package_name, version) do
-    File.mkdir("temp/")
-
-    files = [
-      {'example/example.js', "console.log(\"this is an example package\");\n"},
-      {'example/packagr.yml', "name: #{package_name}\nversion: #{version}\n"}
-    ]
-
-    :erl_tar.create("temp/package.tar.gz", files, [:compressed])
-
-    {:ok, package_gzipped_data} = File.read("temp/package.tar.gz")
-    package_gzipped_data
   end
 end

@@ -10,11 +10,11 @@ use Mix.Config
 
 # You can configure your application as:
 #
-#     config :packagr_cli, key: :value
+#     config :packagr, key: :value
 #
 # and access this configuration in your application as:
 #
-#     Application.get_env(:packagr_cli, :key)
+#     Application.get_env(:packagr, :key)
 #
 # You can also configure a 3rd-party app:
 #
@@ -29,11 +29,11 @@ use Mix.Config
 #
 #     import_config "#{Mix.env()}.exs"
 
-config :packagr_cli,
+config :packagr,
   base_url: "http://localhost:4000/api/",
   username: "foo",
   password: "bar",
-  packagr_api: PackagrApi
+  packagr_api: Packagr.Api
 
 env_config = "#{Mix.env()}.exs"
 

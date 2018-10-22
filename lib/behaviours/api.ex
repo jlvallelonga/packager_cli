@@ -1,4 +1,4 @@
-defmodule Api do
+defmodule Packagr.Behaviours.Api do
   @typedoc """
   literally either :success or :error
   """

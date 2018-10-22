@@ -1,3 +1,3 @@
 ExUnit.start()
 
-Mox.defmock(ApiMock, for: Api)
+Mox.defmock(Packagr.ApiMock, for: Packagr.Behaviours.Api)

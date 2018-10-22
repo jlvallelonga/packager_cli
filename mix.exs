@@ -1,9 +1,9 @@
-defmodule PackagrCli.MixProject do
+defmodule Packagr.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :packagr_cli,
+      app: :packagr,
       version: "0.1.0",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),

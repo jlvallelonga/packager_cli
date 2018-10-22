@@ -1,8 +1,8 @@
-defmodule PackagrCli do
-  @packagr_api Application.get_env(:packagr_cli, :packagr_api)
+defmodule Packagr do
+  @packagr_api Application.get_env(:packagr, :packagr_api)
 
   @moduledoc """
-  Documentation for PackagrCli.
+  Documentation for Packagr.
   """
 
   @doc """

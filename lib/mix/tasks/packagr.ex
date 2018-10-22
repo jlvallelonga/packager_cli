@@ -7,9 +7,9 @@ defmodule Mix.Tasks.Packagr do
   """
 
   def run(argv) do
-    case PackagrCli.parse_arguments(argv) do
+    case Packagr.parse_arguments(argv) do
       {[subcommand], %Optimus.ParseResult{args: args}} ->
-        apply(PackagrCli, subcommand, [args])
+        apply(Packagr, subcommand, [args])
 
       _ ->
         :ok

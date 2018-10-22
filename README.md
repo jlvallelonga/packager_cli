@@ -1,4 +1,4 @@
-# PackagrCli
+# Packagr
 
 A very simple package manager. Connects to server at https://github.com/jlvallelonga/packagr_api
 

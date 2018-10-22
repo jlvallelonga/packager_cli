@@ -1,23 +1,32 @@
-defmodule PackagrTest do
+defmodule Mix.Tasks.PackagrTest do
   use FileCase, async: true
-  doctest Packagr
+  doctest Mix.Tasks.Packagr
 
   import ExUnit.CaptureIO
   import Mox
 
   setup :verify_on_exit!
 
-  describe "parse_arguments/1" do
-    test "returns a tuple with an array and a Optimus.ParseResult struct" do
-      assert {subcommands, parse_result = %Optimus.ParseResult{}} =
-               Packagr.parse_arguments(["search", "example"])
-
-      assert subcommands == [:search]
-      assert parse_result.args == %{query: "example"}
+  describe "--version" do
+    test "displays a short description and the version" do
+      assert capture_io(fn -> Mix.Tasks.Packagr.run(["--version"]) end) ==
+               "a very simple package manager 0.0.1\n"
     end
   end
 
-  describe "search/1" do
+  describe "--help" do
+    test "displays help text" do
+      result = capture_io(fn -> Mix.Tasks.Packagr.run(["--help"]) end)
+      assert result =~ "a very simple package manager 0.0.1\n"
+      assert result =~ "USAGE:\n"
+      assert result =~ "SUBCOMMANDS:\n"
+      assert result =~ "search"
+      assert result =~ "publish"
+      assert result =~ "install"
+    end
+  end
+
+  describe "search" do
     test "displays search results" do
       query = "example"
       expect(Packagr.ApiMock, :search, fn ^query ->
@@ -27,34 +36,26 @@ defmodule PackagrTest do
           ]
         }
       end)
-      result = capture_io(fn -> Packagr.search(%{query: query}) end)
+
+      result = capture_io(fn -> Mix.Tasks.Packagr.run(["search", query]) end)
       assert result =~ ~r/^example - \d+.\d+.\d+\n$/
     end
   end
 
-  describe "publish/1" do
-    test "displays success when it succeeds", %{directory_name: directory_name} do
+  describe "publish" do
+    test "displays response", %{directory_name: directory_name} do
       filepath = directory_name <> "foo.tar.gz"
       expect(Packagr.ApiMock, :publish, fn ^filepath -> :success end)
 
       File.write(filepath, "some gzipped data")
-
-      result = capture_io(fn -> Packagr.publish(%{filepath: filepath}) end)
+      result = capture_io(fn -> Mix.Tasks.Packagr.run(["publish", filepath]) end)
       assert result =~ ~r/^success\n$/
-    end
-
-    test "displays error if file doesn't exist" do
-      filepath = "non_existent_file.tar.gz"
-      expect(Packagr.ApiMock, :publish, 0, fn ^filepath -> :success end)
-
-      result = capture_io(fn -> Packagr.publish(%{filepath: filepath}) end)
-      assert result =~ ~r/^error\n$/
     end
   end
 
-  describe "install/1" do
-    test "displays response", %{directory_name: directory_name} do
-      package_name = "example"
+  describe "install" do
+    test "displays message when package is installed", %{directory_name: directory_name} do
+      package_name = "a_package_name"
       version = "0.0.1"
       expect(Packagr.ApiMock, :install, fn ^package_name, ^version ->
         files = [
@@ -68,7 +69,7 @@ defmodule PackagrTest do
         package_gzipped_data
       end)
 
-      result = capture_io(fn -> Packagr.install(%{package: package_name, version: version}) end)
+      result = capture_io(fn -> Mix.Tasks.Packagr.run(["install", package_name, version]) end)
       assert result =~ ~r/^success\n$/
     end
   end

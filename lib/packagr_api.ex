@@ -1,5 +1,5 @@
-defmodule PackagrApi do
-  @behaviour Api
+defmodule Packagr.Api do
+  @behaviour Packagr.Behaviours.Api
 
   @moduledoc """
   http interface for the packager api
@@ -50,13 +50,13 @@ defmodule PackagrApi do
 
   @spec get_base_url() :: String.t
   defp get_base_url() do
-    Application.get_env(:packagr_cli, :base_url)
+    Application.get_env(:packagr, :base_url)
   end
 
   @spec get_auth_headers() :: list("x-auth-user": String.t, "x-auth-user": String.t)
   defp get_auth_headers() do
-    username = Application.get_env(:packagr_cli, :username)
-    password = Application.get_env(:packagr_cli, :password)
+    username = Application.get_env(:packagr, :username)
+    password = Application.get_env(:packagr, :password)
     ["x-auth-user": username, "x-auth-password": password]
   end
 end

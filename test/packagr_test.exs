@@ -1,11 +1,11 @@
 defmodule PackagrTest do
-  use ExUnit.Case
+  use FileCase, async: true
   doctest Mix.Tasks.Packagr
-
-  alias Mix.Tasks.Packagr
 
   import ExUnit.CaptureIO
   import Mox
+
+  alias Mix.Tasks.Packagr
 
   setup :verify_on_exit!
 
@@ -30,7 +30,8 @@ defmodule PackagrTest do
 
   describe "search" do
     test "displays search results" do
-      expect(ApiMock, :search, fn query ->
+      query = "example"
+      expect(ApiMock, :search, fn ^query ->
         %{
           "packages" => [
             %{"id" => 1, "name" => query, "version" => "0.0.1"}
@@ -38,23 +39,16 @@ defmodule PackagrTest do
         }
       end)
 
-      result = capture_io(fn -> Packagr.run(["search", "example"]) end)
+      result = capture_io(fn -> Packagr.run(["search", query]) end)
       assert result =~ ~r/^example - \d+.\d+.\d+\n$/
     end
   end
 
   describe "publish" do
-    setup do
-      on_exit(fn ->
-        File.rm_rf("temp/")
-      end)
-    end
+    test "displays response", %{directory_name: directory_name} do
+      filepath = directory_name <> "foo.tar.gz"
+      expect(ApiMock, :publish, fn ^filepath -> :success end)
 
-    test "displays response" do
-      expect(ApiMock, :publish, fn _filename -> :success end)
-
-      File.mkdir("temp/")
-      filepath = "temp/foo.tar.gz"
       File.write(filepath, "some gzipped data")
       result = capture_io(fn -> Packagr.run(["publish", filepath]) end)
       assert result =~ ~r/^success\n$/
@@ -62,28 +56,22 @@ defmodule PackagrTest do
   end
 
   describe "install" do
-    setup do
-      on_exit(fn ->
-        File.rm_rf("temp/")
-      end)
-    end
-
-    test "displays message when package is installed" do
-      expect(ApiMock, :install, fn package_name, version ->
-        File.mkdir("temp/")
-
+    test "displays message when package is installed", %{directory_name: directory_name} do
+      package_name = "a_package_name"
+      version = "0.0.1"
+      expect(ApiMock, :install, fn ^package_name, ^version ->
         files = [
           {'example/example.js', "console.log(\"this is an example package\");\n"},
           {'example/packagr.yml', "name: #{package_name}\nversion: #{version}\n"}
         ]
 
-        :erl_tar.create("temp/package.tar.gz", files, [:compressed])
+        :erl_tar.create(directory_name <> "package.tar.gz", files, [:compressed])
 
-        {:ok, package_gzipped_data} = File.read("temp/package.tar.gz")
+        {:ok, package_gzipped_data} = File.read(directory_name <> "package.tar.gz")
         package_gzipped_data
       end)
 
-      result = capture_io(fn -> Packagr.run(["install", "afilename", "0.0.1"]) end)
+      result = capture_io(fn -> Packagr.run(["install", package_name, version]) end)
       assert result =~ ~r/^success\n$/
     end
   end
